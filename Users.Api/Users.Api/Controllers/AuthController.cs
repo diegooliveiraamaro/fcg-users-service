@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Users.Api.Application.Services;
 using Users.Api.Domain.Entities;
 using Users.Api.Infrastructure.Data;
+using Users.Api.Application.DTOs;
 
 namespace Users.Api.Controllers
 {
@@ -21,7 +24,7 @@ namespace Users.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest request)
+        public async Task<IActionResult> Register(RegisterUserRequest request)
         {
             var user = new User
             {
@@ -39,7 +42,7 @@ namespace Users.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login(LoginUserRequest request)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
