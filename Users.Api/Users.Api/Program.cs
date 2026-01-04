@@ -3,24 +3,38 @@ using Users.Api.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =======================
+// REGISTRO DE SERVIÇOS
+// =======================
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// DbContext ? SEMPRE antes do Build
+builder.Services.AddDbContext<UsersDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("Default")
+    )
+);
+
+// =======================
+// BUILD
+// =======================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =======================
+// MIDDLEWARE
+// =======================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-builder.Services.AddDbContext<UsersDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
