@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// DbContext ? SEMPRE antes do Build
+// DbContext
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default")
@@ -28,17 +28,22 @@ var app = builder.Build();
 // MIDDLEWARE
 // =======================
 
-if (app.Environment.IsDevelopment())
+// ?? Swagger habilitado EM TODOS os ambientes (necessário para ECS)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+    c.RoutePrefix = "swagger"; // mantém /swagger
+});
 
-app.UseHttpsRedirection();
+// ? Removido HTTPS redirection (ALB já termina SSL se existir)
+app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run("http://0.0.0.0:80");
+// ?? ESSENCIAL para Docker / ECS
+app.Urls.Add("http://0.0.0.0:80");
 
+app.Run();
