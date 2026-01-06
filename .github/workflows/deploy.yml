@@ -10,19 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout do código
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 🔍 Debug seguro para confirmar que o secret existe
-      - name: Check AWS credentials presence
-        run: |
-          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
-            echo "AWS_ACCESS_KEY_ID is EMPTY"
-            exit 1
-          else
-            echo "AWS_ACCESS_KEY_ID is PRESENT"
-          fi
-
+      # 2️⃣ Configurar credenciais da AWS
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -30,21 +22,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      # 3️⃣ Login no Amazon ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      # 4️⃣ Build da imagem Docker + Push para o ECR
       - name: Build and push Docker image
+        env:
+          ECR_REPO: ${{ vars.ECR_USERS_REPO }}
         run: |
+          echo "Obtendo URI do repositório ECR..."
           IMAGE_URI=$(aws ecr describe-repositories \
-            --repository-names ${{ vars.ECR_USERS_REPO }} \
+            --repository-names $ECR_REPO \
             --query 'repositories[0].repositoryUri' \
             --output text)
 
-          docker build -t $IMAGE_URI:latest .
+          echo "Imagem: $IMAGE_URI"
+
+          docker build \
+            -f Users.Api/Users.Api/Dockerfile \
+            -t $IMAGE_URI:latest \
+            Users.Api/Users.Api
+
           docker push $IMAGE_URI:latest
 
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
+      # 5️⃣ Deploy no ECS (Service usa Task Definition existente)
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
