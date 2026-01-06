@@ -2,25 +2,29 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia todos os arquivos e subpastas
-COPY . .
+# Copia apenas o projeto primeiro (cache mais eficiente)
+COPY Users.Api/Users.Api/Users.Api.csproj ./Users.Api.csproj
 
-# Publica o projeto
-RUN dotnet publish Users.Api/Users.Api/Users.Api.csproj -c Release -o /app/publish
+# Restaura pacotes
+RUN dotnet restore ./Users.Api.csproj
+
+# Copia todo o restante do código
+COPY Users.Api/. ./Users.Api
+
+# Publica a aplicação
+RUN dotnet publish ./Users.Api.csproj -c Release -o /app/publish
 
 # ===== Fase de runtime =====
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-
-# Expõe a porta usada pelo container
 EXPOSE 80
 
-# Copia os arquivos publicados da fase de build
+# Copia a aplicação publicada
 COPY --from=build /app/publish .
 
-# Define o ponto de entrada
-ENTRYPOINT ["dotnet", "Users.Api.dll"]
-
-# ===== Health Check para ECS / ALB =====
+# Healthcheck para ALB / ECS
 HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:80/health || exit 1
+
+# Entrada da aplicação
+ENTRYPOINT ["dotnet", "Users.Api.dll"]
