@@ -37,7 +37,7 @@ jobs:
             --query 'repositories[0].repositoryUri' \
             --output text)
 
-          echo "Imagem: $IMAGE_URI"
+          echo "Imagem gerada: $IMAGE_URI"
 
           docker build \
             -f Users.Api/Users.Api/Dockerfile \
@@ -48,11 +48,20 @@ jobs:
 
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-      # 5️⃣ Deploy no ECS (Service usa Task Definition existente)
+      # 5️⃣ Renderizar nova Task Definition (atualiza a imagem)
+      - name: Render ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ecs-task-definition.json
+          container-name: fcg-users-container
+          image: ${{ env.IMAGE_URI }}:latest
+
+      # 6️⃣ Deploy no ECS
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ vars.TASK_DEFINITION }}
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: true
