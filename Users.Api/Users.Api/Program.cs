@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using Users.Api.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +14,25 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+
+if (Debugger.IsAttached)
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
-    c.RoutePrefix = "swagger";
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/api/auth/swagger/v1/swagger.json", "Users API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
 
 app.UseRouting();
 app.UseAuthorization();
