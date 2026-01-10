@@ -18,25 +18,25 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
 var app = builder.Build();
 
 
-if (Debugger.IsAttached)
+//if (Debugger.IsAttached)
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI(c =>
+//    {
+//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+//        c.RoutePrefix = "swagger";
+//    });
+//}
+//else
+//{
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
-else
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        //c.SwaggerEndpoint("/users/swagger/v1/swagger.json", "Users API v1");
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
+    c.SwaggerEndpoint("/users/swagger/v1/swagger.json", "Users API v1");
+    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+    c.RoutePrefix = "swagger";
+});
+//}
 
 app.UseRouting();
 app.UseAuthorization();
