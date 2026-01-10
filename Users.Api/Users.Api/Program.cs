@@ -29,14 +29,26 @@ var app = builder.Build();
 //}
 //else
 //{
-app.UseSwagger();
+//app.UseSwagger();
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/users/swagger/v1/swagger.json", "Users API v1");
+//    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
+//    c.RoutePrefix = "swagger";
+//});
+//}
+
+
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "users/swagger/{documentName}/swagger.json";
+});
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/users/swagger/v1/swagger.json", "Users API v1");
-    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API v1");
-    c.RoutePrefix = "swagger";
+    c.RoutePrefix = "users/swagger";
 });
-//}
 
 app.UseRouting();
 app.UseAuthorization();
