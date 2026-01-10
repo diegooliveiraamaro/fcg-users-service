@@ -9,7 +9,7 @@ using Users.Api.Application.DTOs;
 namespace Users.Api.Controllers
 {
     [ApiController]
-    [Route("api/auth")]
+    [Route("users")]
     public class AuthController : ControllerBase
     {
         private readonly UsersDbContext _context;

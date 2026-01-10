@@ -32,7 +32,7 @@ else
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/api/auth/swagger/v1/swagger.json", "Users API v1");
+        c.SwaggerEndpoint("/users/swagger/v1/swagger.json", "Users API v1");
         c.RoutePrefix = "swagger";
     });
 }
