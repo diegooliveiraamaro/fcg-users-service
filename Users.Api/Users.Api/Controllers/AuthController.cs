@@ -55,5 +55,4 @@ namespace Users.Api.Controllers
             return Ok(new { token });
         }
     }
-
 }
