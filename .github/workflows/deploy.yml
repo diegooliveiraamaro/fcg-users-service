@@ -51,8 +51,8 @@ jobs:
       - name: Atualizar kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --region $AWS_REGION \
-            --name $EKS_CLUSTER_NAME
+         --region ${{ env.AWS_REGION }} \
+         --name ${{ env.EKS_CLUSTER_NAME }}
 
       - name: Aplicar manifests Kubernetes
         run: |
