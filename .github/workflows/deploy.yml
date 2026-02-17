@@ -56,7 +56,7 @@ jobs:
 
       - name: Aplicar manifests Kubernetes
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f ./fcg-users-service/k8s/
 
       - name: Atualizar imagem do Deployment
         run: |
