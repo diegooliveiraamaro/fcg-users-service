@@ -20,6 +20,9 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Listar estrutura do repositório (debug)
+        run: ls -R
+
       - name: Configurar credenciais AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -35,9 +38,13 @@ jobs:
 
       - name: Build da imagem Docker
         run: |
-          docker build -t $ECR_REPOSITORY:latest .
+          docker build \
+            -t $ECR_REPOSITORY:latest \
+            -f fcg-users-service/fcg-users-service/Users.Api/Users.Api/Dockerfile \
+            fcg-users-service/fcg-users-service
+
           docker tag $ECR_REPOSITORY:latest \
-          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
 
       - name: Push para ECR
         run: |
