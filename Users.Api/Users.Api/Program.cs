@@ -47,11 +47,18 @@ else
 app.UseRouting();
 app.UseAuthorization();
 
+
 app.MapControllers();
 
 // ✅ ENDPOINT ÚNICO PARA O ALB
 app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.Urls.Add("http://0.0.0.0:80");
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();

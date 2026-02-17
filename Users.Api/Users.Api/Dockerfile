@@ -15,7 +15,7 @@ COPY . .
 RUN dotnet publish ./Users.Api.csproj -c Release -o /app/publish
 
 # ===== Fase de runtime =====
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
 EXPOSE 80
 

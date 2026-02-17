@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-api
+  namespace: fcg
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: users-api
+  template:
+    metadata:
+      labels:
+        app: users-api
+    spec:
+      containers:
+        - name: users-api
+          image: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/users-api:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: users-config
+            - secretRef:
+                name: users-secret
+                env:
+  - name: ConnectionStrings__Default
+    valueFrom:
+      secretKeyRef:
+        name: users-secret
+        key: CONNECTION_STRING
+
+  - name: Jwt__Key
+    valueFrom:
+      secretKeyRef:
+        name: users-secret
+        key: JWT_KEY
