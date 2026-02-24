@@ -117,7 +117,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
 //using Microsoft.EntityFrameworkCore;
 //using System.Diagnostics;
 //using Users.Api.Application.Services;
